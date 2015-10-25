@@ -1,9 +1,14 @@
-// the gist takes an object
-// inspired by http://konklone.io/json/
+/*!
+ * @overview gistlink.js
+ *
+ * @copyright (c) 2015 Lucus Pettigrew
+ *                gistlink.js is freely distributable.
+ *
+ */
 
-function permalink(data) {
+function permalink(options) {
 
-    var obj = JSON.stringify(data);
+    var obj = JSON.stringify(options);
 
     var gist = {
       description: 'permalink from: ' + window.location,
