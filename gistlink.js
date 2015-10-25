@@ -1,8 +1,9 @@
 /*!
- * @overview gistlink.js
+ * @overview  gistlink.js
  *
  * @copyright (c) 2015 Lucus Pettigrew
- *                gistlink.js is freely distributable.
+ *                gistlink.js is freely
+ *                distributable.
  *
  */
 
