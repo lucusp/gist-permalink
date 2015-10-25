@@ -1,5 +1,6 @@
 // the gist takes an object
 // inspired by http://konklone.io/json/
+// upload to github via CodePanion
 
 function permalink(data) {
 
