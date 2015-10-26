@@ -1,4 +1,4 @@
-var permalink = (function() {
+var gistlink = (function() {
 
   var _permalink = {};
 
