@@ -1,8 +1,11 @@
-var gistlink = (function() {
+var Gistlink = (function() {
 
   var _permalink = {};
 
-  _permalink.set = function(json, options) {
+  // 1) makes a new private gist
+  // 2) adds gist id to url
+  // 3) creates new browser history
+  _permalink.set = function(json) {
     if (!json) return;
 
     var obj = JSON.stringify(json);
@@ -24,7 +27,7 @@ var gistlink = (function() {
     xhr.onload = function() {
       if (xhr.status === 201) {
         var data = (JSON.parse(xhr.responseText));
-        _permalink.createHistory(data.id);
+        createHistory(data.id);
         console.log(data.id);
       } else {
         console.log(Error(xhr.status));
@@ -35,8 +38,9 @@ var gistlink = (function() {
 
   };
 
+  
   _permalink.load = function(callback) {
-    var id = _permalink.getParam('id');
+    var id = getParam('id');
     if (!id) return;
 
     var getXhr = new XMLHttpRequest();
@@ -55,8 +59,8 @@ var gistlink = (function() {
     getXhr.send();
   }
 
-  // helper for permalink.set
-  _permalink.createHistory = function(id) {
+  // helper for set
+  var createHistory = function(id) {
     if (history && history.pushState) {
       history.pushState({
         id: id
@@ -67,7 +71,7 @@ var gistlink = (function() {
 
   // helper for load
   // directly from konklone.io/json/
-  _permalink.getParam = function(name) {
+  var getParam = function(name) {
     name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
     var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
       results = regex.exec(location.search);
