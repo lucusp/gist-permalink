@@ -1,15 +1,11 @@
-/*!
- * @overview  gistlink.js
- *
- * @copyright (c) 2015 Lucus Pettigrew
- *                gistlink.js is freely
- *                distributable.
- *
- */
+var permalink = (function() {
 
-function permalink(options) {
+  var _permalink = {};
 
-    var obj = JSON.stringify(options);
+  _permalink.set = function(json, options) {
+    if (!json) return;
+
+    var obj = JSON.stringify(json);
 
     var gist = {
       description: 'permalink from: ' + window.location,
@@ -27,8 +23,9 @@ function permalink(options) {
 
     xhr.onload = function() {
       if (xhr.status === 201) {
-        var result = (JSON.parse(xhr.responseText));
-        createHistory(result.id);
+        var data = (JSON.parse(xhr.responseText));
+        _permalink.createHistory(data.id);
+        console.log(data.id);
       } else {
         console.log(Error(xhr.status));
       }
@@ -38,39 +35,45 @@ function permalink(options) {
 
   };
 
-// almost verbatim from http://konklone.io/json/
-function createHistory(id){
-  if (history && history.pushState){
-    history.pushState({id: id}, null, "?id=" + id);
-    console.log("Permalink Created! (Copy from the address bar)");
-  }
-}
+  _permalink.load = function(callback) {
+    var id = _permalink.getParam('id');
+    if (!id) return;
 
-function loadPermalink(){
-  var id = getParam('id');
-  if(!id) return;
-  
-  var getXhr = new XMLHttpRequest();
-  getXhr.open('GET', 'https://api.github.com/gists/' + id, true);
-  
-  getXhr.onload = function(){
-    if(getXhr.status === 200){
-      var input = (JSON.parse(getXhr.responseText));
-      var resultsObj = JSON.parse(input.files["source.json"].content);
-      console.log(resultsObj);
-    } else {
-      console.log(getXhr.status);
+    var getXhr = new XMLHttpRequest();
+    getXhr.open('GET', 'https://api.github.com/gists/' + id, true);
+
+    getXhr.onload = function() {
+      if (getXhr.status === 200) {
+        var input = (JSON.parse(getXhr.responseText));
+        var resultsObj = input.files["source.json"].content;
+        callback(resultsObj);
+      } else {
+        console.log(getXhr.status);
+      }
     }
-  }
-  
-  getXhr.send();
-  
-}
 
-//directly from http://konklone.io/json/
-function getParam(name) {
+    getXhr.send();
+  }
+
+  // helper for permalink.set
+  _permalink.createHistory = function(id) {
+    if (history && history.pushState) {
+      history.pushState({
+        id: id
+      }, null, "?id=" + id);
+      console.log("Permalink Created! (Copy from the address bar)");
+    }
+  };
+
+  // helper for load
+  // directly from konklone.io/json/
+  _permalink.getParam = function(name) {
     name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
     var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
-        results = regex.exec(location.search);
+      results = regex.exec(location.search);
     return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
-}
+  };
+  
+  return _permalink;
+
+}());
